@@ -1,4 +1,4 @@
-const {signUpSchema,loginschema} = require("./user_schema");
+const {signUpSchema,loginschema ,password_validation} = require("./user_schema");
 
 
 
@@ -31,4 +31,16 @@ const {signUpSchema,loginschema} = require("./user_schema");
         }
     }
 
-    module.exports ={addLoginValidate, addUserValidate}
+    const addChangePassword =  async(req,res,next)=>{
+        const value = await password_validation.validate(req.body);
+       //  console.log("value",value);
+        if(value.error){
+            return res.json({
+                success: 0,
+                message: value.error.details[0].message
+            }) 
+        }else {
+        next();
+    }
+}
+    module.exports ={addLoginValidate, addUserValidate , addChangePassword}

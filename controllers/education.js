@@ -1,94 +1,199 @@
-const boss = require ("../db")
+const { error, result } = require("@hapi/joi/lib/base");
+const boss = require("../db")
 const { authData } = require("../token_jwt/index");
+// const { verifytoken } = require()
 const bcrypt = require("bcryptjs")
-
 const salt = 10;
 
-const postApi = async(req,res,next)=>{
+const postApi = async (req, res, next) => {
+    try {
 
-let name = req.body.name
-let email = req.body.email
-const emailcheck = `select * from login_profile where email = ?`
-const value = [email]
-boss.query(emailcheck,value,(error,result)=>{
-    if (error) error;                           
-    // res.send(result);
-    if(result.length > 0){ 
-        return res.status(400).json({
-            status: false,
-            data: null,
-            message: "email is duplicate"
-        })
-    }else {
-
-        bcrypt.hash(req.body.password,salt,(err,hash)=>{
-            if(err){
-                console.log(err);
-            }
-            let sql = `insert into login_profile (name, email, password) VALUES ("${name}","${email}","${hash}")`
-            boss.query(sql, (err,result)=>{
-                if(err){
-                    res.status(500).send({massage:"somthing error"})    
-                }else{
-                    let token = authData(result.inserId);
-                    res.json({
-                        status:true,
-                        token,
-                        data: null,
-                        message: "Success"
-                    })    
-                }
-            })
-    
-        });
-
-    }})}
-
-
-// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
-// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
-
-
-const loginApi = async(req,res,next)=>{
-    let email = req.body.email
-    let password = req.body.password
-    let logincheck = `select * from login_profile where email = ?`;
-    let value = [email,password]
-    boss.query(logincheck,value,(error,result,)=>{
-        if (error) {
-            console.log(error);
-            return res.status(400).send({
-              msg: error
-            });
-          }
-          if (!result.length) {
-            return res.status(401).send({
-              msg: 'Email or password is incorrect!'
-            });
-          }
-          var hash = req.body.password
-          bcrypt.compare(req.body.password,result[0].password,(err, isMatch)=>{
-            if(err){
-                res.status(500).send({massage:"somthing error"})    
-            }
-            if (isMatch){
-                const token = authData(result.inserId);
-                 res.json({
-                    status:true,
-                    token,
+        let name = req.body.name
+        let email = req.body.email
+        const emailcheck = `select * from login_profile where email = ?`
+        const value = [email]
+        boss.query(emailcheck, value, (error, result) => {
+            if (error) error;
+            // res.send(result);
+            if (result.length > 0) {
+                return res.status(400).json({
+                    status: false,
                     data: null,
-                    message: "Successfull login"
-                })    
+                    message: "email is duplicate"
+                })
             } else {
-                return res.json({
-                    status:true,
-                    data: null,
-                    message: "Password not match"
-                })    
+
+                bcrypt.hash(req.body.password, salt, (err, hash) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    let sql = `insert into login_profile (name, email, password) VALUES ("${name}","${email}","${hash}")`
+                    boss.query(sql, (err, result) => {
+                        if (err) {
+                            res.status(500).send({ massage: "somthing error" })
+                        } else {
+                            let token = authData(result.inserId);
+                            res.json({
+                                status: true,
+                                token,
+                                data: null,
+                                message: "Success"
+                            })
+                        }
+                    })
+
+                });
+
             }
-          })
-    })
+        })
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 
-module.exports = {postApi,loginApi}
+
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+
+
+const loginApi = async (req, res, next) => {
+    try {
+        let {email, password} = req.body
+
+        let logincheck = `select * from login_profile where email = ?`;
+        let value = [email]
+        boss.query(logincheck, value, (error, result,) => {
+            if (error) {
+                console.log(error);
+                return res.status(400).send({
+                    msg: error
+                });
+            }
+            if (!result.length) {
+                return res.status(401).send({
+                    msg: 'Email is incorrect!'
+                });
+            }
+            bcrypt.compare(password, result[0].password, (err, isMatch) => {
+                if (err) {
+                    res.status(500).send({ massage: "somthing error" })
+                }
+                if (isMatch) {
+                    console.log("result.insertId", result[0].id);
+                    const token = authData(result[0].id);
+                    res.json({
+                        status: true,
+                        token,
+                        data: null,
+                        message: "Successfull login"
+                    })
+                } else {
+                    return res.json({
+                        status: true,
+                        data: null,
+                        message: "Password not match"
+                    })
+                }
+            })
+        })
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+
+
+const updateProfile = async (req, res, next) => {
+    try {
+        let id = res.locals.jwt.userId
+        console.log("id", id);
+        let name = req.body.name
+        let email = req.body.email
+        const sql = `select * from login_profile where email = ?`
+             const value = [email]
+             boss.query(sql,value,(err,result)=>{
+                if(err){
+                    console.log(err);
+                }if(result.length>0){
+                    return res.status(400).json({
+                        status: false,
+                        data: null,
+                        message: "email is duplicate"
+                    })
+                }else{const update = `update login_profile SET name = ?, email = ? where id = ?`
+            const value = [name, email, id]
+            boss.query(update, value, (error, result ,) => {
+                console.log(result, "result ");
+                if (error) {
+                 res.status(500).send("error update user")
+                }if(result.affectedRow>0){
+                    return res.json({
+                        status: true,
+                        data: null,
+                        message: "user update successfully"
+                    })
+                }})}})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+
+
+
+const change_password = async (req, res, next) => {
+    try { 
+        let id = res.locals.jwt.userId
+        let old_password   = req.body.old_password 
+        let newpassword = req.body.newpassword
+        let sql = `select password from login_profile where id = ? `
+        let value = [id]
+        boss.query(sql,value,(err,result)=>{
+            console.log(err);
+            console.log(result,"result");
+       
+        bcrypt.compare(old_password, result[0].password, (err,isMatch)=>{
+            if(err){
+                console.log(err)
+                return res.status(400).send({msg:"somthing error"})
+            }if(isMatch){ 
+                bcrypt.hash(newpassword, salt, (err, hash) => {
+                    console.log(err);
+                    let sql = `update login_profile set password = ? where id = ?`
+                    let value = [hash,id]
+                    boss.query(sql,value, (err, result) => {
+                        console.log(result,"result");
+                        if (err) {
+                            console.log(err);
+                            return res.status(400).send("something err")
+                        }
+                         if (result.affectedRows>0){
+                            return res.status(200).json({
+                                status:true,
+                                data:result,
+                                msg:'password has changed'
+                            });
+                        }}
+                        )  
+                    })
+        }})})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+// ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
+
+
+module.exports = { postApi, loginApi, updateProfile, change_password }

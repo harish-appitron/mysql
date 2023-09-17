@@ -13,4 +13,9 @@ let loginschema =  Joi.object({
       password: Joi.string().required(),
    })
 
-module.exports = {signUpSchema,loginschema}
+
+let password_validation = Joi.object({
+   old_password: Joi.string().required(),
+   new_password: Joi.string().required()
+})
+module.exports = {signUpSchema,loginschema , password_validation}
