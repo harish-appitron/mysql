@@ -1,4 +1,4 @@
-const {signUpSchema,loginschema ,password_validation} = require("./user_schema");
+const {signUpSchema,loginschema ,password_validation, payment_validation} = require("./user_schema");
 
 
 
@@ -41,6 +41,18 @@ const {signUpSchema,loginschema ,password_validation} = require("./user_schema")
             }) 
         }else {
         next();
-    }
-}
+       }
+    } 
+
+
+
+    //  const payment = async(req,res,next)=>{
+    //     const value = await payment_validation.validate(req.body);
+    //     if(value.error){
+    //         return res.json({
+    //             success: 0,
+    //             message: value.error.details[0].message
+    //         })
+    //     }
+    //  }
     module.exports ={addLoginValidate, addUserValidate , addChangePassword}

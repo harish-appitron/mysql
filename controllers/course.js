@@ -56,7 +56,30 @@ const getAllCourse = async(req,res,next)=>{
                         }
                     }
                    }
+                  
+                    
+                const savedsql = `select course_id from saved where user_id = ?`
+                const savedvalue = [uid]
 
+                db.query(savedsql,savedvalue,(err2,userSavedData)=>{
+                    console.log(err2,"err2");
+                    console.log(userSavedData,"userSavedData");
+                    if (err2) {
+                        return res.status(400).send("something error")
+                    }
+                      for (let index of result){
+                        for(let k of userSavedData){
+                            if(index.id == k.course_id){
+                                index.active =  true;
+                                console.log(index.active,"index.active");
+                                break
+                            }else{
+                                index.active = false
+                            }
+                        }
+                      }
+                })
+                
                 return  res.status(200).json({
                     status:true,
                     data:result,

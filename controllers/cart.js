@@ -12,9 +12,11 @@ const cartDetails = async (req, res, next) => {
 
         console.log(id);
         
-        const sql = `SELECT add_cart.id, course_name,category,page_image,details,about_course,duration from add_cart join course on add_cart.course_id = course.id WHERE add_cart.user_id = ? `
+        const sql = `SELECT course_name,category,page_image,details,about_course,duration from add_cart join course on add_cart.course_id = course.id WHERE add_cart.user_id = ?`
         const value = [id]
         db.query(sql, value, (err, result) => {
+            console.log(err,"err");
+            console.log(result,"result");
             try{
                 if (err) {
                     console.log(err, "error");
@@ -30,7 +32,7 @@ const cartDetails = async (req, res, next) => {
     
                     return res.json({
                         status: true,
-                        data: result,
+                        data: [],
                         message: "list of course"
                     })
                 }
@@ -80,7 +82,8 @@ const addToCart = async (req, res, next) => {
                     data:[],
                     msg:"this course_id already purchased"
                 })
-            }else{ const sql = `INSERT into add_cart (user_id, course_id, status, create_at, update_at) values (?, ?, ?, ?, ?)`
+            }else{
+                 const sql = `INSERT into add_cart (user_id, course_id, status, create_at, update_at) values (?, ?, ?, ?, ?)`
         const value = [id,  course_id, "1", currentDate, currentDate]
 
         db.query(sql, value, (err, result) => {
