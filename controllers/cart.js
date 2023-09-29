@@ -62,15 +62,14 @@ const addToCart = async (req, res, next) => {
         console.log(id, "id");
         const course_id = req.body.course_id;
 
-        if (!course_id) return res.status(400).json({
-            msg: "Please pass the course Id"
-        })
+            if (!course_id) return res.status(400).json({
+                msg: "Please pass the course Id"
+            })
 
         const currentDate = moment().format('YYYY-MM-DD');
         console.log(currentDate, "currentdate");
         console.log(course_id);
 
-        
         let sql = `select * from add_Cart where user_id = ? AND course_id = ?`
         let value = [id, course_id]
         db.query(sql,value,(err,result)=>{
