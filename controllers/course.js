@@ -28,6 +28,15 @@ const getAllCourse = async(req,res,next)=>{
                if (err1) {
                  return res.status(400).send("something error")
                }
+                const savedsql = `select course_id from saved where user_id = ?`
+                const savedvalue = [uid]
+
+                db.query(savedsql,savedvalue,(err2,userSavedData)=>{
+                    console.log(err2,"err2");
+                    console.log(userSavedData,"userSavedData");
+                    if (err2) {
+                        return res.status(400).send("something error")
+                    }
             // for (let index = 0; index < result.length; index++){ 
             //     for (let j =  0; j < userCartData.length ; j++) {
             //         console.log("result", result.id);
@@ -45,40 +54,49 @@ const getAllCourse = async(req,res,next)=>{
              
 
                    for (let index of result){
+                    
                     for(let j of userCartData){
                         console.log(j)
                         if(index.id == j.course_id){
-                            index.active = true;
+                         index.active = true;
                             console.log(index.active,"index.active");
                             break;
                         }else{
                             index.active = false
                         }
                     }
-                   }
-                  
-                    
-                const savedsql = `select course_id from saved where user_id = ?`
-                const savedvalue = [uid]
-
-                db.query(savedsql,savedvalue,(err2,userSavedData)=>{
-                    console.log(err2,"err2");
-                    console.log(userSavedData,"userSavedData");
-                    if (err2) {
-                        return res.status(400).send("something error")
-                    }
-                      for (let index of result){
-                        for(let k of userSavedData){
-                            if(index.id == k.course_id){
-                                index.active =  true;
-                                console.log(index.active,"index.active");
-                                break
-                            }else{
-                                index.active = false
-                            }
+                    for(let k of userSavedData){
+                    if(index.id == k.course_id){
+                      index.activeSaved =  true;
+                        console.log(index.activeSaved,"index.activeSaved");
+                           break
+                    }else{
+                           index.activeSaved = false
                         }
-                      }
-                })
+                   }
+                }
+                    
+                // const savedsql = `select course_id from saved where user_id = ?`
+                // const savedvalue = [uid]
+
+                // db.query(savedsql,savedvalue,(err2,userSavedData)=>{
+                //     console.log(err2,"err2");
+                //     console.log(userSavedData,"userSavedData");
+                //     if (err2) {
+                //         return res.status(400).send("something error")
+                //     }
+                //       for (let index of result){
+                //         for(let k of userSavedData){
+                //             if(index.id == k.course_id){
+                //                 index.active =  true;
+                //                 console.log(index.active,"index.active");
+                //                 break
+                //             }else{
+                //                 index.active = false
+                //             }
+                //         }
+                //       }
+                // })
                 
                 return  res.status(200).json({
                     status:true,
@@ -89,7 +107,7 @@ const getAllCourse = async(req,res,next)=>{
             })
 
         }
-            )
+            )})
     } catch (error) {
         console.log(error);
     }}

@@ -16,7 +16,7 @@ const addToPayment = async(req,res,next)=>{
     const value = [uid,amount,payment_method,status,currentDate,currentDate]
     db.query(sql,value,(err,result)=>{
         console.log(err,"err")
-        console.log(result,"result");
+        console.log(result,"result");   
         if (err){
             res.status(400).send("something error !")
         } else {
@@ -25,7 +25,6 @@ const addToPayment = async(req,res,next)=>{
                 data:[],
                 msg:"this is payment !"
             })
-            
         }
     })
         
@@ -52,7 +51,7 @@ const GetPayment = async(req,res,next)=>{
         if(err){
             res.status(400).json({
               status:false,
-              data:[],
+              data:[],  
               msg:"something error"
             })
         }else{

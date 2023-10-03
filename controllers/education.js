@@ -5,7 +5,7 @@ const { authData } = require("../token_jwt/index");
 const bcrypt = require("bcryptjs")
 const salt = 10;
 
-const postApi = async (req, res, next) => {
+const SignupApi = async (req, res, next) => {
     try {
 
         let name = req.body.name
@@ -60,7 +60,6 @@ const postApi = async (req, res, next) => {
 const loginApi = async (req, res, next) => {
     try {
         let {email, password} = req.body
-
         let logincheck = `select * from login_profile where email = ?`;
         let value = [email]
         boss.query(logincheck, value, (error, result,) => {
@@ -165,7 +164,7 @@ const change_password = async (req, res, next) => {
             if(err){
                 console.log(err)
                 return res.status(400).send({msg:"somthing error"})
-            }if(isMatch){ 
+            }if(isMatch){   
                 bcrypt.hash(newpassword, salt, (err, hash) => {
                     console.log(err);
                     let sql = `update login_profile set password = ? where id = ?`
@@ -196,4 +195,4 @@ const change_password = async (req, res, next) => {
 // ==========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================//
 
 
-module.exports = { postApi, loginApi, updateProfile, change_password }
+module.exports = { SignupApi, loginApi, updateProfile, change_password }

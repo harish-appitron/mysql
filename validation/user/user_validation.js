@@ -17,8 +17,7 @@ const {signUpSchema,loginschema ,password_validation, payment_validation} = requ
         }
     
     }
-
-        const addLoginValidate =  async(req,res,next)=>{
+    const addLoginValidate =  async(req,res,next)=>{
             const value = await loginschema.validate(req.body);
            //  console.log("value",value);
             if(value.error){
@@ -31,18 +30,18 @@ const {signUpSchema,loginschema ,password_validation, payment_validation} = requ
         }
     }
 
-    const addChangePassword =  async(req,res,next)=>{
-        const value = await password_validation.validate(req.body);
-       //  console.log("value",value);
-        if(value.error){
-            return res.json({
-                success: 0,
-                message: value.error.details[0].message
-            }) 
-        }else {
-        next();
-       }
-    } 
+        const addChangePassword =  async(req,res,next)=>{
+            const value = await password_validation.validate(req.body);
+        //  console.log("value",value);
+            if(value.error){
+                return res.json({
+                    success: 0,
+                    message: value.error.details[0].message
+                }) 
+            }else {
+            next();
+        }
+        } 
 
 
 

@@ -2,9 +2,11 @@ const express = require("express")
 
 const coursename = express.Router();
 
+let {addUserValidate, addLoginValidate, addChangePassword } = require("../validation/user/user_validation")
+
 const {getsaved,addToSaved,deletetosaved} = require("../controllers/saved")
 
-const {postApi, loginApi, updateProfile,change_password} = require("../controllers/education");
+const {SignupApi, loginApi, updateProfile,change_password} = require("../controllers/education");
 
 const {upload,upload_profile} = require("../controllers/image")
 
@@ -22,11 +24,9 @@ const {Call_api} = require("../controllers/Api")
 
 const verifyToken = require("../token_jwt/index")
 
-let {addUserValidate, addLoginValidate, addChangePassword } = require("../validation/user/user_validation")
-
 coursename.post("/login", addLoginValidate, loginApi);
 
-coursename.post("/signup", addUserValidate, postApi);
+coursename.post("/signup", addUserValidate, SignupApi);
 
 coursename.patch("/changepassword", verifyToken.verifyToken, addChangePassword, change_password)
 

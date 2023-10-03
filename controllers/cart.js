@@ -32,7 +32,7 @@ const cartDetails = async (req, res, next) => {
     
                     return res.json({
                         status: true,
-                        data: [],
+                        data: result,
                         message: "list of course"
                     })
                 }
